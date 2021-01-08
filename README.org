@@ -499,12 +499,37 @@ By using ~auth-source-pass-enable~ you can use files created with ~pass~ for aut
 
 *** Company
 
-
 #+begin_src emacs-lisp
 (use-package company
-  :hook ((prog-mode org-mode) . company-mode)
-  :bind (("C-c y" . company-yasnippet)
-         ("C-c f" . company-files)))
+  :hook ((prog-mode tex-mode TeX-mode) . company-mode)
+  :bind (:map company-active-map (">" . company-filter-candidates))
+  :init
+  (defun company-emacs-lisp-mode ()
+    "Setup company mode for emacs-lisp-mode"
+    (set (make-local-variable 'company-backends)
+         '((company-elisp
+            company-files
+            company-yasnippet
+            company-dabbrev-code))))
+  (add-hook 'emacs-lisp-mode-hook 'company-emacs-lisp-mode)
+  :config
+  (setq company-tooltip-limit 10
+        company-show-numbers t
+        company-selection-wrap-around t
+        company-dabbrev-other-buffers t))
+
+(use-package company-math
+  :init
+  (defun company-latex-mode ()
+    "Setup company mode for TeX-mode and tex-mode"
+    (set (make-local-variable 'company-backends)
+         '((company-math-symbols-latex
+            company-latex-commands
+            company-yasnippet
+            company-dabbrev
+            company-files))))
+  (add-hook 'TeX-mode-hook 'company-latex-mode)
+  (add-hook 'tex-mode-hook 'company-latex-mode))
 #+end_src
 
 *** Eglot
@@ -602,6 +627,11 @@ In ~osX~ dictionary files (*.aff and *.dic) should be placed in: ~/Library/Spell
   :config (yas-reload-all))
 
 (use-package yasnippet-snippets :requires yasnippet)
+
+(use-package ivy-yasnippet
+  :requires (ivy yasnippet)
+  :hook (yas-minor-mode . ivy-yasnippet)
+  :bind (("C-c y" . ivy-yasnippet)))
 #+end_src
 
 *** Theme + Fonts

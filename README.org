@@ -499,6 +499,7 @@ By using ~auth-source-pass-enable~ you can use files created with ~pass~ for aut
 
 *** Company
 
+
 #+begin_src emacs-lisp
 (use-package company
   :hook ((prog-mode org-mode) . company-mode)
@@ -1071,7 +1072,8 @@ Vterm doesn't work well with evil. But if your zsh is already vimified that's no
         "%50ITEM(Task) %2PRIORITY %10Effort(Effort){:} %10CLOCKSUM")
   ;; tags
   (setq org-tag-alist '((:startgroup . nil)
-                        ("finance" . ?f) ("health" . ?h) ("math" . ?m) ("nice" . ?n) ("remodel" . ?r) ("tracking" . ?t)
+                        ("other" . ?o) ("finance" . ?f) ("health" . ?h)
+                        ("math" . ?m) ("nice" . ?n) ("remodel" . ?r)
                         (:endgroup . nil)
                         ("project" . ?p)
                         ("work" . ?w)

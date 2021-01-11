@@ -992,7 +992,7 @@ Vterm doesn't work well with evil. But if your zsh is already vimified that's no
       (mapc #'kill-buffer buffers))))
 #+end_src
 
-*** Library
+*** Bibtex
 
 #+begin_src emacs-lisp
 (use-package bibtex
@@ -1021,18 +1021,10 @@ Vterm doesn't work well with evil. But if your zsh is already vimified that's no
   ;; open with
   (defun mar-bibtex-open-function (fpath)
     (let* ((extension (file-name-extension fpath)))
-      (cond ((string= extension "epub") (call-process "open" nil 0 nil "-a" "books" fpath))
+      (cond ((string= extension "pdf") (call-process "open" nil 0 nil "-a" "skim" fpath))
+            ((string= extension "epub") (call-process "open" nil 0 nil "-a" "books" fpath))
             (t (find-file fpath)))))
   (setq bibtex-completion-pdf-open-function 'mar-bibtex-open-function))
-
-(use-package pdf-tools
-  :mode  ("\\.pdf\\'" . pdf-view-mode)
-  :config
-  (setq-default pdf-view-display-size 'fit-page)
-  (setq pdf-view-resize-factor 1.05
-        pdf-annot-activate-created-annotations t)
-  (pdf-tools-install :no-query)
-  (require 'pdf-occur))
 #+end_src
 
 ** Other

@@ -262,6 +262,31 @@ Increase threshold for garbage collection, and then restore to its initial value
   (define-key evil-inner-text-objects-map "s" 'sentence-nav-evil-inner-sentence))
 #+end_src
 
+*** Functions
+
+Region to process from:
+https://emacs.stackexchange.com/questions/37887/send-region-to-shell-in-another-buffer
+
+#+begin_src emacs-lisp
+(defun mar-region-to-process (arg beg end)
+  "Send the current region to a process buffer.
+On first call it prompts for the buffer name. Subsequent calls send to the same
+buffer, unless a prefix argument is used (C-u), or the buffer no longer has an
+active process."
+  (interactive "P\nr")
+  (if (or arg
+          (not (boundp 'tws-process-target))
+          (not (process-live-p (get-buffer-process
+      (setq tws-process-target
+            (completing-read
+             "Process: "
+             (seq-map (lambda (el) (buffer-name (process-buffer el)))
+                      (process-list)))))
+  (process-send-region tws-process-target beg end))
+
+(define-key evil-visual-state-map ",r" 'mar-region-to-process)
+#+end_src
+
 *** Navigate buffers
 
 #+begin_src emacs-lisp
@@ -326,14 +351,6 @@ Increase threshold for garbage collection, and then restore to its initial value
   (interactive)
   (switch-to-buffer (other-buffer)))
 
-(defun mar-refresh-other-buffer ()
-  "Refresh other buffer"
-  (interactive)
-  (unless (one-window-p)
-    (other-window 1)
-    (revert-buffer :ignore-auto :noconfirm)
-    (other-window 1)))
-
 (define-key my-leader-map "kb" 'mar-close-this-buffer)
 (define-key my-leader-map "ko" 'mar-close-other-buffer)
 (define-key my-leader-map "kB" 'mar-close-and-kill-this-pane)
@@ -342,7 +359,6 @@ Increase threshold for garbage collection, and then restore to its initial value
 (define-key my-leader-map "kt" 'mar-cleanup-tramp-buffers)
 (define-key my-leader-map "kd" 'mar-cleanup-dired-buffers)
 (define-key my-leader-map "o"  'mar-switch-other-buffer)
-(define-key my-leader-map "r"  'mar-refresh-other-buffer)
 #+end_src
 
 *** Ivy + Friends

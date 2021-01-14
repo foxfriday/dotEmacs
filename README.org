@@ -262,31 +262,6 @@ Increase threshold for garbage collection, and then restore to its initial value
   (define-key evil-inner-text-objects-map "s" 'sentence-nav-evil-inner-sentence))
 #+end_src
 
-*** Functions
-
-Region to process from:
-https://emacs.stackexchange.com/questions/37887/send-region-to-shell-in-another-buffer
-
-#+begin_src emacs-lisp
-(defun mar-region-to-process (arg beg end)
-  "Send the current region to a process buffer.
-On first call it prompts for the buffer name. Subsequent calls send to the same
-buffer, unless a prefix argument is used (C-u), or the buffer no longer has an
-active process."
-  (interactive "P\nr")
-  (if (or arg
-          (not (boundp 'tws-process-target))
-          (not (process-live-p (get-buffer-process
-      (setq tws-process-target
-            (completing-read
-             "Process: "
-             (seq-map (lambda (el) (buffer-name (process-buffer el)))
-                      (process-list)))))
-  (process-send-region tws-process-target beg end))
-
-(define-key evil-visual-state-map ",r" 'mar-region-to-process)
-#+end_src
-
 *** Navigate buffers
 
 #+begin_src emacs-lisp
@@ -697,6 +672,13 @@ In ~osX~ dictionary files (*.aff and *.dic) should be placed in: ~/Library/Spell
   :hook (org-mode . variable-pitch-mode))
 #+end_src
 
+*** Emacs Cell
+
+#+begin_src emacs-lisp
+(use-package emacs-cell
+  :straight (:host github :repo "foxfriday/emacs-cell"))
+#+end_src
+
 ** Modes
 *** Beancounts
 
@@ -803,8 +785,6 @@ pip install --upgrade black
       (if (member mar-default-python (pyenv-mode-versions))
           (pyenv-mode-set mar-default-python)
         (message "WARNING: Default pyenv not found (see pyenv-mode)")))))
-
-(use-package python-cell)
 #+end_src
 
 *** R

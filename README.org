@@ -676,6 +676,7 @@ In ~osX~ dictionary files (*.aff and *.dic) should be placed in: ~/Library/Spell
 
 #+begin_src emacs-lisp
 (use-package emacs-cell
+  :commands (emacs-cell-mode)
   :straight (:host github :repo "foxfriday/emacs-cell"))
 #+end_src
 
@@ -1118,9 +1119,6 @@ Vterm doesn't work well with evil. But if your zsh is already vimified that's no
   ;; For org-agenda this doesn't seem to work as a hook
   (evil-set-initial-state 'org-agenda-mode 'motion)
   :config
-  ;; habits
-  (require 'org-habit)
-  (setq org-habit-show-habits-only-for-today t)
   ;; files
   (setq org-agenda-file-regexp "\\`[^.].*\\(\\.txt\\|\\.org\\)\\'")
   ;; ergonomics

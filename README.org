@@ -238,13 +238,6 @@ Increase threshold for garbage collection, and then restore to its initial value
 (use-package evil-matchit
   :init (global-evil-matchit-mode 1))
 
-(use-package evil-mc
-  :init
-  (global-evil-mc-mode 1)
-  (define-key my-leader-map "mi" 'evil-mc-make-cursor-in-visual-selection-beg)
-  (define-key my-leader-map "ma" 'evil-mc-make-cursor-in-visual-selection-end)
-  (define-key my-leader-map "mq" 'evil-mc-undo-all-cursors))
-
 (use-package evil-nerd-commenter
   :init
   ;; toggle comments
@@ -253,13 +246,13 @@ Increase threshold for garbage collection, and then restore to its initial value
 
 (use-package sentence-navigation
   :init
-  (define-key evil-motion-state-map ")" 'sentence-nav-evil-forward)
-  (define-key evil-motion-state-map "(" 'sentence-nav-evil-backward)
-  (define-key evil-motion-state-map "g)" 'sentence-nav-evil-forward-end)
-  (define-key evil-motion-state-map "g(" 'sentence-nav-evil-backward-end)
-  ;; e.g. das (outer) and dis (inner)
-  (define-key evil-outer-text-objects-map "s" 'sentence-nav-evil-a-sentence)
-  (define-key evil-inner-text-objects-map "s" 'sentence-nav-evil-inner-sentence))
+ (define-key evil-motion-state-map ")" 'sentence-nav-evil-forward)
+ (define-key evil-motion-state-map "(" 'sentence-nav-evil-backward)
+ (define-key evil-motion-state-map "g)" 'sentence-nav-evil-forward-end)
+ (define-key evil-motion-state-map "g(" 'sentence-nav-evil-backward-end)
+ ;; e.g. das (outer) and dis (inner)
+ (define-key evil-outer-text-objects-map "s" 'sentence-nav-evil-a-sentence)
+ (define-key evil-inner-text-objects-map "s" 'sentence-nav-evil-inner-sentence))
 #+end_src
 
 *** Navigate buffers

@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: jupyter-R
-# key: <jr
-# --
-
-#+begin_src jupyter-R
-$0
-#+end_src

@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: jupyter-python
-# key: <jpy
-# --
-#+begin_src jupyter-python
-$0
-#+end_src

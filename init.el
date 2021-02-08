@@ -398,14 +398,13 @@
   ;; Use Hunspell if available.
   (when (executable-find "hunspell")
     (setq-default ispell-program-name "hunspell")
-    (add-to-list 'ispell-skip-region-alist '("^```" . "^```"))
-    (add-to-list 'ispell-skip-region-alist '("^$$" . "^$$"))
-    (add-to-list 'ispell-skip-region-alist '("\begin{equation}" . "\end{equation}"))
-    (add-to-list 'ispell-skip-region-alist '("\begin{equation*" . "\end{equation*}"))
-    (setq ispell-really-hunspell t)
-    (setq ispell-local-dictionary-alist
-          '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
-    (setq ispell-dictionary "en_US")))
+    (setq ispell-really-hunspell t))
+  (setq ispell-local-dictionary-alist
+        '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
+  (setq ispell-dictionary "en_US")
+  ;; ignore code blocks
+  (add-to-list 'ispell-skip-region-alist '("^```" . "^```"))
+  (add-to-list 'ispell-skip-region-alist '("^$$" . "^$$")))
 
 (use-package yasnippet
   :hook ((prog-mode org-mode) . yas-minor-mode)

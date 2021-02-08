@@ -340,6 +340,8 @@
             company-yasnippet
             company-dabbrev
             company-files))))
+  (add-hook 'gfm-mode-hook 'company-latex-mode)
+  (add-hook 'markdown-mode-hook 'company-latex-mode)
   (add-hook 'TeX-mode-hook 'company-latex-mode)
   (add-hook 'tex-mode-hook 'company-latex-mode))
 
@@ -496,13 +498,11 @@
   :mode (("README.md" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
-  :init
-  (add-hook 'TeX-mode-hook 'company-latex-mode)
   :config
-  (setq markdown-asymmetric-header t
-        ;; code blocks only
-        markdown-fontify-code-blocks-natively t
-        markdown-enable-math t)
+  (setq-default markdown-asymmetric-header t
+                ;; code blocks only
+                markdown-fontify-code-blocks-natively t
+                markdown-enable-math t)
   ;; bindings
   (evil-define-key 'normal markdown-mode-map
     "K" 'markdown-outline-next

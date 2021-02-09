@@ -440,14 +440,13 @@
   (add-to-list 'ispell-skip-region-alist '("^$$" . "^$$")))
 
 (use-package yasnippet
-  :hook ((prog-mode org-mode) . yas-minor-mode)
+  :hook ((prog-mode) . yas-minor-mode)
   :bind (:map yas-minor-mode-map ("TAB" . nil)
                                  ("<tab>" . nil)
                                  ("M-SPC" . 'yas-expand))
   :config (yas-reload-all))
 
-(use-package yasnippet-snippets
-  :requires yasnippet)
+(use-package yasnippet-snippets)
 
 (use-package ivy-yasnippet
   :requires (ivy yasnippet)

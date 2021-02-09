@@ -618,7 +618,6 @@
         bibtex-entry-format t))
 
 (use-package ivy-bibtex
-  :requires (ivy)
   :config
   ;; paths
   (setq bibtex-completion-bibliography mar-path-library-cards

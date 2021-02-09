@@ -26,14 +26,6 @@
 (straight-use-package 'bind-key)          ;; enable :bind
 (setq-default use-package-always-defer t) ;; lazy load all
 
-;; Constants
-(defvar mar-path-secrets (concat user-emacs-directory "secrets.el")
-  "Path to any non public local variables.")
-(if (file-exists-p mar-path-secrets) (load mar-path-secrets))
-
-;; Custom
-(setq custom-file (concat user-emacs-directory "custom.el"))
-
 ;; Base
 (use-package emacs
   :straight (:type built-in)
@@ -51,6 +43,45 @@
   (setq auto-save-default nil
         make-backup-files nil)
   (setq epa-pinentry-mode 'loopback)
+
+  ;; paths
+  (defconst mar-on-mac (eq system-type 'darwin)
+    "Working on a mac.")
+  (defconst mar-on-linux (eq system-type 'gnu/linux)
+    "Working on a linux machine.")
+  (defvar mar-path-library (if mar-on-mac "~/Dropbox/lib/" "~/Documents/lib/")
+    "Path to library directory.")
+  (defvar mar-path-library-cards `(,(concat mar-path-library "cards.bib"))
+    "List of path to bibtex file with all the documents.")
+  (defvar mar-path-library-files `(,(concat mar-path-library "Pdf")
+                                   ,(concat mar-path-library "Pdf")
+                                   ,(concat mar-path-library "Epub"))
+    "List of paths to directories with all the documents.")
+  (defvar mar-path-llvm (if mar-on-mac "/usr/local/opt/llvm/bin/"
+                          "/usr/local/llvm/bin/")
+    "Path to llvm binaries.")
+  (defvar mar-path-clangd (concat mar-path-llvm "clangd")
+    "Path to clangd.")
+  (defvar mar-path-clang-format (concat mar-path-llvm "clang-format")
+    "Path to clang format.")
+  (defvar mar-default-python (if mar-on-mac "3.8.6" "3.8.6")
+    "Default Python installation or environment.")
+  (defvar mar-path-python (if mar-on-mac "~/.pyenv/versions/3.8.6/bin/"
+                            "/usr/local/bin/")
+    "Path to Python binaries.")
+  (defvar mar-path-python-lsp (concat mar-path-python "pyls")
+    "Path to the language server for python.")
+  (defvar mar-path-python-black (concat mar-path-python "black")
+    "Path to python's black.")
+
+  ;; Secrets
+  (defvar mar-path-secrets (concat user-emacs-directory "secrets.el")
+    "Path to any non public local variables.")
+  (if (file-exists-p mar-path-secrets) (load mar-path-secrets))
+
+  ;; Custom
+  (setq custom-file (concat user-emacs-directory "custom.el"))
+
   ;; some functions to better manage buffer
   (defun mar-close-this-buffer ()
     "Close the current buffer."

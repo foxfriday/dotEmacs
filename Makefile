@@ -1,7 +1,7 @@
 SELF_DIR=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 init:
-	ln -s $(SELF_DIR)early-init.el $(HOME)/.emacs.d/early-init.el
-	ln -s $(SELF_DIR)init.el $(HOME)/.emacs.d/init.el
-	ln -s $(SELF_DIR)secrets.el $(HOME)/.emacs.d/secrets.el
-	ln -s $(SELF_DIR)snippets $(HOME)/.emacs.d/snippets
+	ln -sf $(SELF_DIR)early-init.el $(HOME)/.config/emacs/early-init.el
+	ln -sf $(SELF_DIR)init.el $(HOME)/.config/emacs/init.el
+	ln -sf $(SELF_DIR)secrets.el $(HOME)/.config/emacs/secrets.el
+	ln -sfn $(SELF_DIR)snippets $(HOME)/.config/emacs/snippets

@@ -1,4 +1,7 @@
 
+;; All in .config
+(setq user-emacs-directory "~/.config/emacs/")
+
 ;; Speed up init time
 (setq gc-cons-threshold 64000000)
 (add-hook 'after-init-hook #'(lambda () (setq gc-cons-threshold 800000)))
@@ -42,6 +45,7 @@
   (show-paren-mode t)
   (setq auto-save-default nil
         make-backup-files nil)
+  (setq x-select-enable-clipboard t)
   (setq epa-pinentry-mode 'loopback)
 
   ;; paths
@@ -49,25 +53,20 @@
     "Working on a mac.")
   (defconst mar-on-linux (eq system-type 'gnu/linux)
     "Working on a linux machine.")
-  (defvar mar-path-library (if mar-on-mac "~/Dropbox/lib/" "~/Documents/lib/")
+  (defvar mar-path-library (if mar-on-mac "~/Dropbox/lib/" "~/Dropbox/lib/")
     "Path to library directory.")
-  (defvar mar-path-library-cards `(,(concat mar-path-library "cards.bib"))
+  (defvar mar-path-library-cards `(,(concat mar-path-library "bib/master.bib"))
     "List of path to bibtex file with all the documents.")
-  (defvar mar-path-library-files `(,(concat mar-path-library "Pdf")
-                                   ,(concat mar-path-library "Pdf")
-                                   ,(concat mar-path-library "Epub"))
+  (defvar mar-path-library-files `(,(concat mar-path-library "pdf/econ")
+                                   ,(concat mar-path-library "pdf/hist")
+                                   ,(concat mar-path-library "pdf/prog")
+                                   ,(concat mar-path-library "pdf/psyc")
+                                   ,(concat mar-path-library "pdf/stat"))
     "List of paths to directories with all the documents.")
-  (defvar mar-path-llvm (if mar-on-mac "/usr/local/opt/llvm/bin/"
-                          "/usr/local/llvm/bin/")
-    "Path to llvm binaries.")
-  (defvar mar-path-clangd (concat mar-path-llvm "clangd")
-    "Path to clangd.")
-  (defvar mar-path-clang-format (concat mar-path-llvm "clang-format")
-    "Path to clang format.")
-  (defvar mar-default-python (if mar-on-mac "3.8.6" "3.8.6")
+  (defvar mar-default-python (if mar-on-mac "3.8.6" "emacs")
     "Default Python installation or environment.")
   (defvar mar-path-python (if mar-on-mac "~/.pyenv/versions/3.8.6/bin/"
-                            "/usr/local/bin/")
+                            "~/.pyenv/versions/emacs/bin/")
     "Path to Python binaries.")
   (defvar mar-path-python-lsp (concat mar-path-python "pyls")
     "Path to the language server for python.")
@@ -182,6 +181,7 @@
                   (vc-mode vc-mode)               ;; git info
                   "|"
                   mode-name
+                  "|"
                   mode-line-misc-info))
   (setq evil-mode-line-format nil)
   (setq-default mode-line-position '("|%l:%c|"))
@@ -223,7 +223,7 @@
  (define-key evil-inner-text-objects-map "s" 'sentence-nav-evil-inner-sentence))
 
 ;; Project.el is an Emacs core package; however, the one included is old
-;; and missing some functions, like project-root which is used by Eglot.
+;; and missing some functions, like project-root which is used by other modes.
 ;; If the package that comes with Emacs is loaded instead of the one installed
 ;; with straight, you need to remove it.
 (use-package project
@@ -356,6 +356,8 @@
             company-dabbrev-code))))
   (add-hook 'emacs-lisp-mode-hook 'company-emacs-lisp-mode)
   :config
+  (evil-define-key 'insert company-mode-map
+    (kbd "C-c c") 'company-yasnippet)
   (setq company-tooltip-limit 10
         company-show-numbers t
         company-selection-wrap-around t
@@ -373,16 +375,13 @@
             company-files))))
   (add-hook 'gfm-mode-hook 'company-latex-mode)
   (add-hook 'markdown-mode-hook 'company-latex-mode)
-  (add-hook 'TeX-mode-hook 'company-latex-mode)
-  (add-hook 'tex-mode-hook 'company-latex-mode))
+  (add-hook 'LaTeX-mode-hook 'company-latex-mode))
 
 (use-package eglot
-  :hook ((c-mode c++-mode python-mode ess-r-mode) . eglot-ensure)
-  :init
-  (setq eglot-server-programs
-        `((python-mode ,mar-path-python-lsp)
-          ((c++-mode c-mode) ,mar-path-clangd)
-          (ess-r-mode "R --slave -e languageserver::run()")))
+  :hook ((c-mode c++-mode python-mode ess-r-mode sh-mode) . eglot-ensure)
+  :config
+  (add-to-list 'eglot-server-programs
+	               `(python-mode . (,mar-path-python-lsp)))
   (setq eglot-autoshutdown t))
 
 (use-package display-line-numbers
@@ -423,7 +422,7 @@
 (use-package flyspell
   :straight (:type built-in)
   :hook
-  ((gfm-mode markdown-mode org-mode message-mode) . flyspell-mode))
+  ((gfm-mode markdown-mode LaTeX-mode) . flyspell-mode))
 
 (use-package ispell
   :config
@@ -440,26 +439,19 @@
   (add-to-list 'ispell-skip-region-alist '("^$$" . "^$$")))
 
 (use-package yasnippet
-  :hook ((prog-mode) . yas-minor-mode)
-  :bind (:map yas-minor-mode-map ("TAB" . nil)
-                                 ("<tab>" . nil)
-                                 ("M-SPC" . 'yas-expand))
-  :config (yas-reload-all))
+  :hook ((prog-mode LaTeX-mode) . yas-minor-mode)
+  :config
+  (yas-reload-all))
 
 (use-package yasnippet-snippets)
-
-(use-package ivy-yasnippet
-  :requires (ivy yasnippet)
-  :hook (yas-minor-mode . ivy-yasnippet)
-  :init (define-key my-leader-map "ss" 'ivy-yasnippet))
 
 (use-package faces
   :straight (:type built-in)
   :init
-  (defconst mar-font-fp (if mar-on-mac "Menlo" "Inconsolata")
+  (defconst mar-font-fp (if mar-on-mac "Menlo" "DejaVu Sans Mono")
     "Default fix point font")
 
-  (defconst mar-font-vp (if mar-on-mac "Helvetica" "Source Sans Pro")
+  (defconst mar-font-vp (if mar-on-mac "Helvetica" "DejaVu Sans")
     "Default variable point font")
 
   (defun mar-reset-fonts ()
@@ -478,16 +470,17 @@
 (use-package modus-themes
   :init
   (when (display-graphic-p)
-    (modus-themes-load-operandi)))
+    (modus-themes-load-vivendi)))
 
 (use-package visual-line
   :straight (:type built-in)
-  :hook ((gfm-mode markdown-mode org-mode) . visual-line-mode))
+  :hook ((gfm-mode markdown-mode LaTeX-mode) . visual-line-mode))
 
 (use-package imenu-list
+  :hook (imenu-list-major-mode . evil-emacs-state)
   :commands (imenu-list-smart-toggle)
   :init
-  (define-key my-leader-map "ti" 'imenu-list-smart-toggle))
+  (define-key my-leader-map "tt" 'imenu-list-smart-toggle))
 
 (use-package imenu-anywhere
   :init
@@ -495,7 +488,7 @@
   (defun mar-imenu-use-package ()
     "Add use-package to imenu"
     (add-to-list 'imenu-generic-expression
-                 '("Used Packages"
+                 '("Use Package"
                    "\\(^\\s-*(use-package +\\)\\(\\_<.+\\_>\\)" 2)))
   (add-hook 'emacs-lisp-mode-hook #'mar-imenu-use-package)
   :config
@@ -509,20 +502,36 @@
   :bind (:map beancount-mode-map ("C-z" . beancount-tab-dwim)))
 
 (use-package cmake-mode
+  ;; package comes with the system cmake installation
   :straight nil
   :commands (cmake-mode))
 
 (use-package clang-format+
   :hook ((c-mode c++-mode) . clang-format+-mode)
-  :config (setq clang-format-executable mar-path-clang-format))
-
-(use-package modern-cpp-font-lock
-  :hook (c++-mode . modern-c++-font-lock-mode))
+  :config
+  (if mar-on-mac (setq "/usr/local/opt/llvm/bin/clang-format")))
 
 (use-package json-mode)
 
-(use-package auctex
-  :straight (:type built-in))
+(use-package tex
+  :straight auctex
+  :hook ((LaTeX-mode . LaTeX-math-mode)
+         (LaTeX-mode . prettify-symbols-mode)
+         (LaTeX-mode . flymake-mode)
+         (LaTeX-mode . TeX-source-correlate-mode))
+  :config
+  ;; auctex provides semantic checker with flymake and chktex
+  (evil-define-key 'normal flymake-mode-map
+    "]l" 'flymake-goto-next-error
+    "[l" 'flymake-goto-prev-error
+    "[d" 'flymake-goto-diagnostic)
+  (setq-default TeX-master nil)
+  (add-to-list 'TeX-view-program-selection '(output-pdf "Zathura"))
+  (setq TeX-auto-save t
+        TeX-parse-self t
+        reftex-plug-into-AUCTeX t
+        TeX-source-correlate-start-server t
+        prettify-symbols-unprettify-at-point t))
 
 (use-package markdown-mode
   :mode (("README.md" . gfm-mode)
@@ -637,41 +646,7 @@
   ;; open with
   (defun mar-bibtex-open-function (fpath)
     (let* ((extension (file-name-extension fpath)))
-      (cond ((string= extension "pdf") (call-process "open" nil 0 nil "-a" "skim" fpath))
-            ((string= extension "epub") (call-process "open" nil 0 nil "-a" "books" fpath))
+      (cond ((string= extension "pdf") (call-process "xdg-open" nil 0 nil "-a" "skim" fpath))
+            ((string= extension "epub") (call-process "xdg-open" nil 0 nil "-a" "books" fpath))
             (t (find-file fpath)))))
   (setq bibtex-completion-pdf-open-function 'mar-bibtex-open-function))
-
-(use-package org
-  :straight (:type built-in)
-  :config
-  (require 'org-crypt)
-  ;; some ergonomics
-  (setq-default org-return-follows-link t
-                org-indent-indentation-per-level 1
-                org-adapt-indentation nil
-                org-hide-leading-stars t
-                org-log-into-drawer t)
-  ;; bindings
-  (evil-define-key 'normal org-mode-map
-    ;; base
-    ",d" 'org-decrypt-entry
-    ",D" 'org-decrypt-entries
-    "za" 'org-cycle))
-
-(use-package ob
-  :straight (:type built-in)
-  :config
-  (setq-default org-confirm-babel-evaluate nil)
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t)
-     (shell . t))))
-
-(use-package org-crypt
-  :straight (:type built-in)
-  :config
-  (epa-file-enable)
-  (org-crypt-use-before-save-magic)
-  (setq org-crypt-disable-auto-save t)
-  (setq org-tags-exclude-from-inheritance (quote("crypt"))))

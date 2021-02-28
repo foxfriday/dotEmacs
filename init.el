@@ -256,7 +256,14 @@
   (if mar-on-linux  (define-key my-leader-map "sa" 'counsel-linux-app))
   ;; kill ring
   (define-key my-leader-map "y" 'counsel-yank-pop)
-  (evil-ex-define-cmd "find" 'counsel-find-file))
+  ;; find
+  (evil-define-command mar-evil-find (filename)
+    "Open a file"
+    :repeat nil
+    :move-point nil
+    (interactive "<f>")
+    (counsel-find-file filename))
+  (evil-ex-define-cmd "find" 'mar-evil-find))
 
 (use-package counsel-osx-app
   :if mar-on-mac

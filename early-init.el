@@ -8,5 +8,7 @@
 ;; larger than the system default.
 (setq frame-inhibit-implied-resize t)
 
+;; prevent package.el loading packages prior to their init-file loading
+(setq package-enable-at-startup nil)
 ;; Ignore X resources
 (advice-add #'x-apply-session-resources :override #'ignore)

@@ -56,19 +56,9 @@
   ;; major prog modes
   (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
-  ;; paths
+  ;; system
   (defconst mar-on-mac (eq system-type 'darwin)
     "Working on a mac.")
-  (defvar mar-path-library (if mar-on-mac "~/Dropbox/lib/" "~/Dropbox/lib/")
-    "Path to library directory.")
-  (defvar mar-path-library-cards `(,(concat mar-path-library "bib/master.bib"))
-    "List of path to bibtex file with all the documents.")
-  (defvar mar-path-library-files `(,(concat mar-path-library "pdf/econ")
-                                   ,(concat mar-path-library "pdf/hist")
-                                   ,(concat mar-path-library "pdf/prog")
-                                   ,(concat mar-path-library "pdf/psyc")
-                                   ,(concat mar-path-library "pdf/stat"))
-    "List of paths to directories with all the documents.")
 
   ;; Custom
   (setq custom-file (concat user-emacs-directory "custom.el"))
@@ -212,9 +202,6 @@
 (use-package evil-matchit
   :init (global-evil-matchit-mode 1))
 
-(use-package project
-  :init (define-key my-leader-map "sf" 'project-find-file))
-
 (use-package counsel
   :init
   (counsel-mode 1)
@@ -222,9 +209,12 @@
   (defun mar-rg-directory ()
     "rg (wgrep) in a directory"
     (interactive)
-    (let* ((dir (read-file-name "Directory:" default-directory))
-           (search ""))
-      (counsel-rg search dir)))
+    (let* ((dir (read-file-name "Directory:" default-directory)))
+      (counsel-rg nil dir)))
+  (defun mar-rg-notes ()
+    "rg (wgrep) in notes directory"
+    (interactive)
+    (counsel-rg nil "~/Dropbox/md/"))
   ;; help
   (define-key my-leader-map "hv" 'counsel-describe-variable)
   (define-key my-leader-map "hf" 'counsel-describe-function)
@@ -233,10 +223,12 @@
   (define-key my-leader-map "hb" 'counsel-descbinds)
   (define-key my-leader-map "ha" 'counsel-apropos)
   ;; search/switch
+  (define-key my-leader-map "sf" 'project-find-file)
   (define-key my-leader-map "sm" 'counsel-mark-ring)
   (define-key my-leader-map "sb" 'counsel-bookmark)
   (define-key my-leader-map "sd" 'mar-rg-directory)
   (define-key my-leader-map "sg" 'counsel-git-grep)
+  (define-key my-leader-map "sn" 'mar-rg-notes)
   (unless mar-on-mac  (define-key my-leader-map "sa" 'counsel-linux-app))
   ;; kill ring
   (define-key my-leader-map "y" 'counsel-yank-pop)
@@ -461,10 +453,7 @@
   :config
   (setq-default markdown-asymmetric-header t
                 markdown-fontify-code-blocks-natively t
-                markdown-enable-math t)
-  (evil-define-key 'normal markdown-mode-map
-    "K" 'markdown-outline-next
-    "J" 'markdown-outline-next))
+                markdown-enable-math t))
 
 (use-package python
   :hook (inferior-python-mode . evil-emacs-state)
@@ -510,15 +499,19 @@
 (use-package ivy-bibtex
   :config
   ;; paths
-  (setq bibtex-completion-bibliography mar-path-library-cards
-        bibtex-completion-library-path mar-path-library-files
-        bibtex-completion-notes-path (concat org-directory "book-notes/"))
+  (setq bibtex-completion-bibliography "~/Dropbox/lib/bib/master.bib"
+        bibtex-completion-library-path (list "~/Dropbox/lib/pdf/econ"
+                                             "~/Dropbox/lib/pdf/hist"
+                                             "~/Dropbox/lib/pdf/prog"
+                                             "~/Dropbox/lib/pdf/psyc"
+                                             "~/Dropbox/lib/pdf/stat")
+        bibtex-completion-notes-path "~/Dropbox/md/books/")
   ;; completion
   (setq bibtex-completion-pdf-extension '(".pdf" ".epub")
         bibtex-completion-pdf-symbol "#"
         bibtex-completion-notes-symbol "*"
         bibtex-completion-notes-extension ".md"
-        bibtex-completion-notes-template-multiple-files "# ${author-or-editor}: ${title}\n"
+        bibtex-completion-notes-template-multiple-files "# ${title}\n"
         bibtex-completion-additional-search-fields '(keywords)
         bibtex-completion-format-citation-functions
         '((latex-mode    . bibtex-completion-format-citation-cite)

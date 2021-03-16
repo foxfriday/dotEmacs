@@ -50,7 +50,9 @@
 
   ;; major text mode
   (add-hook 'text-mode-hook 'flyspell-mode)
-  (add-hook 'text-mode-hook 'prettify-symbols-mode)
+  (add-hook 'text-mode-hook
+            (lambda () (setq prettify-symbols-unprettify-at-point 'right-edge)
+              (prettify-symbols-mode)))
   (add-hook 'text-mode-hook 'visual-line-mode)
 
   ;; major prog modes

@@ -304,19 +304,19 @@
   :hook ((prog-mode lsp-mode) . flycheck-mode))
 
 (use-package lsp-mode
-  :hook ((python-mode sh-mode tex-mode latex-mode bibtex-mode) . lsp-deferred)
+  :hook ((python-mode sh-mode tex-mode latex-mode) . lsp-deferred)
   :commands lsp
   :config
   (setq lsp-headerline-breadcrumb-enable nil)
 
   (defun lsp-latex-msg (result)
-    "Message for synctex."
+    "Message from synctex."
     (if (eq 0 (plist-get result :status))
         (message "Command succeeded")
       (message "Command failed")))
 
   (defun lsp-latex-build ()
-    "Build TeX file and start a server process for synctex"
+    "Build TeX file and start a server process"
     (interactive)
     (unless (boundp 'server-process)
       (server-start))
@@ -358,9 +358,12 @@
   :config (push 'company-lsp company-backends))
 
 (use-package ccls
-  :requires (lsp-mode)
-  :hook ((c-mode c++-mode objc-mode cuda-mode) .
-         (lambda () (require 'ccls) (lsp))))
+  :hook (c-mode-common . (lambda () (require 'ccls) (lsp)))
+  :config
+  (setq company-transformers nil
+        company-lsp-async t
+        company-lsp-cache-candidates nil
+        ccls-sem-highlight-method 'font-lock))
 
 (use-package olivetti
   :config (setq olivetti-body-width 80))

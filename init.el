@@ -30,8 +30,8 @@
 
 ;; Emacs Defaults
 (use-package emacs
- :straight (:type built-in)
- :init
+  :straight (:type built-in)
+  :init
   ;; preffered settings
   (setq-default indent-tabs-mode nil
                 ring-bell-function 'ignore
@@ -312,6 +312,20 @@
         company-selection-wrap-around t
         company-dabbrev-other-buffers t))
 
+(use-package compile
+  :straight (:type built-in)
+  :config
+  (require 'ansi-color)
+  (defun colorize-compilation-buffer ()
+    (let ((inhibit-read-only t))
+      (ansi-color-apply-on-region (point-min) (point-max))))
+  (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+  (define-key compilation-mode-map (kbd "h") nil)
+  (define-key compilation-mode-map (kbd "g") nil)
+  (define-key compilation-mode-map (kbd "r") 'recompile)
+  (define-key my-leader-map "R" 'recompile)
+  (setq compilation-scroll-output t))
+
 (use-package flycheck
   :hook ((prog-mode lsp-mode) . flycheck-mode))
 
@@ -380,12 +394,12 @@
 (use-package olivetti
   :hook (text-mode . olivetti-mode)
   :config
+  (setq-default olivetti-body-width 82)
   (defun mar-olivetti-recenter ()
     "Toggle olivetti from relative to absolute size."
     (interactive)
-    (setq olivetti-body-width (if (< olivetti-body-width 1.0) 80 0.8))
-    (redraw-frame))
-  (setq olivetti-body-width 80))
+    (setq olivetti-body-width (if (< olivetti-body-width 1.0) 82 0.8))
+    (redraw-frame)))
 
 (use-package ispell
   :config
@@ -420,7 +434,7 @@
     "Resets fonts to defaults set based on system and monitor"
     (interactive)
     (let* ((height (if (display-graphic-p)
-                       (if (< (x-display-pixel-height) 3300) 140 220)
+                       (if (> (x-display-pixel-height) 3000) 140 200)
                      120))
            (heigvp (+ height 10)))
       (set-face-attribute
@@ -484,6 +498,7 @@
                                   (push '("\\beta" . 946) prettify-symbols-alist)
                                   (push '("\\gamma" . 947) prettify-symbols-alist)
                                   (push '("\\delta" . 948) prettify-symbols-alist)
+                                  (push '("\\Delta" . "Δ") prettify-symbols-alist)
                                   (push '("\\epsilon" . 1013) prettify-symbols-alist)
                                   (prettify-symbols-mode t)))
   :config

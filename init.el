@@ -36,7 +36,7 @@
   (setq-default indent-tabs-mode nil
                 ring-bell-function 'ignore
                 line-spacing 4
-                initial-scratch-message "*scratch*\n"
+                initial-scratch-message ";; scratch buffer\n"
                 frame-resize-pixelwise t)
   (blink-cursor-mode 0)
   (fset 'yes-or-no-p 'y-or-n-p)
@@ -49,11 +49,23 @@
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
   ;; major text mode
-  (add-hook 'text-mode-hook 'flyspell-mode)
   (add-hook 'text-mode-hook
-            (lambda () (setq prettify-symbols-unprettify-at-point 'right-edge)
-              (prettify-symbols-mode)))
-  (add-hook 'text-mode-hook 'visual-line-mode)
+            (lambda ()
+              (setq prettify-symbols-unprettify-at-point 'right-edge)
+              (prettify-symbols-mode)
+              (flyspell-mode)
+              (visual-line-mode)
+              (setq fill-column 80)))
+
+  (defun unfill-paragraph (&optional region)
+    "Takes a multi-line paragraph and makes it into a single line of text."
+    (interactive (progn (barf-if-buffer-read-only) '(t)))
+    (let ((fill-column (point-max))
+          ;; This would override `fill-column' if it's an integer.
+          (emacs-lisp-docstring-fill-column t))
+      (fill-paragraph nil region)))
+
+  (define-key global-map "\M-Q" 'unfill-paragraph)
 
   ;; major prog modes
   (add-hook 'prog-mode-hook 'display-line-numbers-mode)
@@ -144,8 +156,8 @@
   (define-key evil-motion-state-map ")" 'evil-forward-sentence-begin)
   (define-key evil-motion-state-map "(" 'evil-backward-sentence-begin)
   ;; e.g. das (outer) and dis (inner)
-  (define-key evil-outer-text-objects-map "s" 'evil-forward-sentence-begin)
-  (define-key evil-inner-text-objects-map "s" 'evil-backward-sentence-begin)
+  (define-key evil-outer-text-objects-map "s" 'evil-a-sentence)
+  (define-key evil-inner-text-objects-map "s" 'evil-inner-sentence)
   ;; windows bindings
   (define-key evil-motion-state-map (kbd "C-h") 'evil-window-left)
   (define-key evil-motion-state-map (kbd "C-j") 'evil-window-down)
@@ -216,7 +228,8 @@
   (defun mar-rg-notes ()
     "rg (wgrep) in notes directory"
     (interactive)
-    (counsel-rg nil "~/Dropbox/md/"))
+    (let* ((counsel-rg-base-command "rg --with-filename --no-heading --color never %s"))
+      (counsel-rg nil "~/Dropbox/md/")))
   ;; help
   (define-key my-leader-map "hv" 'counsel-describe-variable)
   (define-key my-leader-map "hf" 'counsel-describe-function)
@@ -283,7 +296,6 @@
 
 (use-package company
   :hook ((prog-mode markdown-mode) . company-mode)
-  :bind (:map company-active-map (">" . company-filter-candidates))
   :init
   (defun company-emacs-lisp-mode ()
     "Setup company mode for emacs-lisp-mode"
@@ -366,7 +378,14 @@
         ccls-sem-highlight-method 'font-lock))
 
 (use-package olivetti
-  :config (setq olivetti-body-width 80))
+  :hook (text-mode . olivetti-mode)
+  :config
+  (defun mar-olivetti-recenter ()
+    "Toggle olivetti from relative to absolute size."
+    (interactive)
+    (setq olivetti-body-width (if (< olivetti-body-width 1.0) 80 0.8))
+    (redraw-frame))
+  (setq olivetti-body-width 80))
 
 (use-package ispell
   :config
@@ -401,7 +420,7 @@
     "Resets fonts to defaults set based on system and monitor"
     (interactive)
     (let* ((height (if (display-graphic-p)
-                       (if (> (x-display-pixel-width) 2000) 220 110)
+                       (if (< (x-display-pixel-height) 3300) 140 220)
                      120))
            (heigvp (+ height 10)))
       (set-face-attribute
@@ -455,6 +474,18 @@
   :mode (("README.md" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
+  :init
+  (add-hook 'markdown-mode-hook (lambda ()
+                                  (prettify-symbols-mode nil)
+                                  (push '("\\leq" . 8804) prettify-symbols-alist)
+                                  (push '("\\neq" . 8800) prettify-symbols-alist)
+                                  (push '("\\geq" . 8805) prettify-symbols-alist)
+                                  (push '("\\alpha" . 945) prettify-symbols-alist)
+                                  (push '("\\beta" . 946) prettify-symbols-alist)
+                                  (push '("\\gamma" . 947) prettify-symbols-alist)
+                                  (push '("\\delta" . 948) prettify-symbols-alist)
+                                  (push '("\\epsilon" . 1013) prettify-symbols-alist)
+                                  (prettify-symbols-mode t)))
   :config
   (setq-default markdown-asymmetric-header t
                 markdown-fontify-code-blocks-natively t

@@ -434,7 +434,7 @@
     "Resets fonts to defaults set based on system and monitor"
     (interactive)
     (let* ((height (if (display-graphic-p)
-                       (if (> (x-display-pixel-height) 3000) 140 200)
+                       (if (> (x-display-pixel-height) 3000) 140 240)
                      120))
            (heigvp (+ height 10)))
       (set-face-attribute
@@ -471,8 +471,7 @@
 (use-package beancount
   :straight (:host github :repo "beancount/beancount-mode")
   :magic ("%beancount" . beancount-mode)
-  :hook (beancount-mode . outline-minor-mode)
-  :bind (:map beancount-mode-map ("C-z" . beancount-tab-dwim)))
+  :hook (beancount-mode . outline-minor-mode))
 
 (use-package cmake-mode
   ;; package comes with the system cmake installation

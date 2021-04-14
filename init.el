@@ -25,7 +25,6 @@
 ;; Use Package
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)  ;; :straight t by default
-(straight-use-package 'bind-key)          ;; enable :bind
 (setq-default use-package-always-defer t) ;; lazy load all
 
 ;; Emacs Defaults

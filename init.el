@@ -337,7 +337,7 @@
   (define-key compilation-mode-map (kbd "g") nil)
   (define-key compilation-mode-map (kbd "r") 'recompile)
   (define-key my-leader-map "R" 'recompile)
-  (setq compilation-scroll-output t))
+  (setq-default compilation-scroll-output t))
 
 (use-package flycheck
   :hook ((prog-mode lsp-mode) . flycheck-mode))
@@ -513,19 +513,6 @@
   :mode (("README.md" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
-  :init
-  (add-hook 'markdown-mode-hook (lambda ()
-                                  (prettify-symbols-mode nil)
-                                  (push '("\\leq" . 8804) prettify-symbols-alist)
-                                  (push '("\\neq" . 8800) prettify-symbols-alist)
-                                  (push '("\\geq" . 8805) prettify-symbols-alist)
-                                  (push '("\\alpha" . 945) prettify-symbols-alist)
-                                  (push '("\\beta" . 946) prettify-symbols-alist)
-                                  (push '("\\gamma" . 947) prettify-symbols-alist)
-                                  (push '("\\delta" . 948) prettify-symbols-alist)
-                                  (push '("\\Delta" . "Δ") prettify-symbols-alist)
-                                  (push '("\\epsilon" . 1013) prettify-symbols-alist)
-                                  (prettify-symbols-mode t)))
   :config
   (evil-define-key 'normal markdown-mode-map
     "]]" 'outline-next-visible-heading

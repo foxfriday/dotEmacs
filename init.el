@@ -198,6 +198,20 @@
   (setq-default mode-line-format mar-mode-line-format)
   (setq mode-line-format mar-mode-line-format))
 
+(use-package outline
+  :straight (:type built-in)
+  :config
+  (evil-define-key 'normal outline-minor-mode-map
+    "]]" 'outline-next-visible-heading
+    "[[" 'outline-previous-visible-heading
+    "]u" 'outline-up-heading
+    (kbd "M-h") 'outline-promote
+    (kbd "M-j") 'outline-move-subtree-down
+    (kbd "M-k") 'outline-move-subtree-up
+    (kbd "M-l") 'outline-demote
+    "zb" 'outline-show-children
+    "zB" 'outline-show-branches))
+
 (use-package evil-nerd-commenter
   :init
   (define-key my-leader-map (kbd "c <SPC>") 'evilnc-comment-or-uncomment-lines))
@@ -471,7 +485,20 @@
 (use-package beancount
   :straight (:host github :repo "beancount/beancount-mode")
   :magic ("%beancount" . beancount-mode)
-  :hook (beancount-mode . outline-minor-mode))
+  :hook (beancount-mode . outline-minor-mode)
+  :config
+  (defun mar-beancount-align (begin end)
+    "Align postings under the point's paragraph."
+    (interactive "r")
+    (beancount-align-numbers begin end 60))
+  (defun mar-beancount-check ()
+    "Runs a check using the primary file."
+    (interactive)
+    (let ((compilation-read-command nil))
+      (beancount--run beancount-check-program
+                      (file-relative-name "main.beancount"))))
+  (define-key beancount-mode-map (kbd "C-c a") 'mar-beancount-align)
+  (define-key beancount-mode-map (kbd "C-c l") 'mar-beancount-check))
 
 (use-package cmake-mode
   ;; package comes with the system cmake installation
@@ -501,6 +528,16 @@
                                   (push '("\\epsilon" . 1013) prettify-symbols-alist)
                                   (prettify-symbols-mode t)))
   :config
+  (evil-define-key 'normal markdown-mode-map
+    "]]" 'outline-next-visible-heading
+    "[[" 'outline-previous-visible-heading
+    "]u" 'outline-up-heading
+    (kbd "M-h") 'markdown-promote
+    (kbd "M-j") 'outline-move-subtree-down
+    (kbd "M-k") 'outline-move-subtree-up
+    (kbd "M-l") 'markdown-demote
+    "zb" 'outline-show-children
+    "zB" 'outline-show-branches)
   (setq-default markdown-asymmetric-header t
                 markdown-fontify-code-blocks-natively t
                 markdown-enable-math t))

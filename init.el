@@ -7,7 +7,7 @@
 
 ;; Straight
 (setq load-prefer-newer t)
-(setq straight-check-for-modifications '(check-on-save))
+(setq straight-check-for-modifications '(check-on-save find-when-checking))
 
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -499,6 +499,8 @@
   (define-key beancount-mode-map (kbd "C-c a") 'mar-beancount-align)
   (define-key beancount-mode-map (kbd "C-c l") 'mar-beancount-check))
 
+(use-package ledger-mode)
+
 (use-package cmake-mode
   ;; package comes with the system cmake installation
   :straight nil
@@ -524,8 +526,7 @@
     (kbd "M-l") 'markdown-demote
     "zb" 'outline-show-children
     "zB" 'outline-show-branches)
-  (setq-default markdown-asymmetric-header t
-                markdown-fontify-code-blocks-natively t
+  (setq-default markdown-fontify-code-blocks-natively t
                 markdown-enable-math t))
 
 (use-package python

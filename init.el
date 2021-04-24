@@ -501,8 +501,6 @@
   (define-key beancount-mode-map (kbd "C-c a") 'mar-beancount-align)
   (define-key beancount-mode-map (kbd "C-c l") 'mar-beancount-check))
 
-(use-package ledger-mode)
-
 (use-package cmake-mode
   ;; package comes with the system cmake installation
   :straight nil

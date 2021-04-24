@@ -484,12 +484,14 @@
 (use-package beancount
   :straight (:host github :repo "beancount/beancount-mode")
   :magic ("%beancount" . beancount-mode)
-  :hook (beancount-mode . outline-minor-mode)
+  ;; :hook (beancount-mode . outline-minor-mode)
   :config
-  (defun mar-beancount-align (begin end)
+  (defun mar-beancount-align ()
     "Align postings under the point's paragraph."
-    (interactive "r")
-    (beancount-align-numbers begin end 60))
+    (interactive)
+    (let ((a (point-min))
+          (b (point-max)))
+      (beancount-align-numbers a b 60)))
   (defun mar-beancount-check ()
     "Runs a check using the primary file."
     (interactive)

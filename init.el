@@ -585,7 +585,7 @@
         bibtex-completion-pdf-symbol "#"
         bibtex-completion-notes-symbol "*"
         bibtex-completion-notes-extension ".md"
-        bibtex-completion-notes-template-multiple-files "# ${title}\n"
+        bibtex-completion-notes-template-multiple-files "# ${title} #\n"
         bibtex-completion-additional-search-fields '(keywords)
         bibtex-completion-format-citation-functions
         '((latex-mode    . bibtex-completion-format-citation-cite)

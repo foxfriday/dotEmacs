@@ -447,7 +447,7 @@
     "Resets fonts to defaults set based on system and monitor"
     (interactive)
     (let* ((height (if (display-graphic-p)
-                       (if (> (x-display-pixel-height) 3000) 140 240)
+                       (if (> (x-display-pixel-height) 3000) 140 220)
                      120))
            (heigvp (+ height 10)))
       (set-face-attribute

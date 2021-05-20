@@ -242,7 +242,7 @@
     "rg (wgrep) in notes directory"
     (interactive)
     (let* ((counsel-rg-base-command "rg --with-filename --no-heading --color never %s"))
-      (counsel-rg nil "~/Dropbox/md/")))
+      (counsel-rg nil "~/Dropbox/notes/")))
   ;; help
   (define-key my-leader-map "hv" 'counsel-describe-variable)
   (define-key my-leader-map "hf" 'counsel-describe-function)
@@ -579,7 +579,7 @@
                                              "~/Dropbox/lib/pdf/prog"
                                              "~/Dropbox/lib/pdf/psyc"
                                              "~/Dropbox/lib/pdf/stat")
-        bibtex-completion-notes-path "~/Dropbox/md/books/")
+        bibtex-completion-notes-path "~/Dropbox/notes/books/")
   ;; completion
   (setq bibtex-completion-pdf-extension '(".pdf" ".epub")
         bibtex-completion-pdf-symbol "#"

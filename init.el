@@ -242,7 +242,7 @@
     "rg (wgrep) in notes directory"
     (interactive)
     (let* ((counsel-rg-base-command "rg --with-filename --no-heading --color never %s"))
-      (counsel-rg nil "~/Dropbox/notes/")))
+      (counsel-rg nil "~/Dropbox/notes/mxd")))
   ;; help
   (define-key my-leader-map "hv" 'counsel-describe-variable)
   (define-key my-leader-map "hf" 'counsel-describe-function)

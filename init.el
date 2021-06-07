@@ -63,16 +63,7 @@
               (prettify-symbols-mode)
               (flyspell-mode)
               (visual-line-mode)
-              (setq fill-column 80)))
-
-  (defun unfill-paragraph (&optional region)
-    "From multi-line paragraph to a long single line of text."
-    (interactive (progn (barf-if-buffer-read-only) '(t)))
-    (let ((fill-column (point-max))
-          (emacs-lisp-docstring-fill-column t))
-      (fill-paragraph nil region)))
-
-  (define-key global-map "\M-Q" 'unfill-paragraph))
+              (setq fill-column 80))))
 
 ;; Appearance
 (use-package faces
@@ -139,50 +130,6 @@
   (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
   (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
   (global-set-key [escape] 'evil-exit-emacs-state)
-  ;; Manage buffers
-  (defun mar-close-this-buffer ()
-    "Close the current buffer."
-    (interactive)
-    (kill-buffer (current-buffer)))
-
-  (defun mar-close-other-buffer ()
-    "Close buffer in other window."
-    (interactive)
-    (unless (one-window-p)
-      (other-window 1)
-      (kill-this-buffer)
-      (if (not (one-window-p))
-          (other-window 1))))
-
-  (defun mar-close-and-kill-this-pane ()
-    "Kill this window and its buffer."
-    (interactive)
-    (kill-buffer (current-buffer))
-    (if (not (one-window-p))
-        (delete-window)))
-
-  (defun mar-close-and-kill-other-pane ()
-    "Kill other window and its buffer."
-    (interactive)
-    (other-window 1)
-    (kill-this-buffer)
-    (if (not (one-window-p))
-        (delete-window)))
-
-  (defun mar-cleanup-tramp-buffers ()
-    "Close all tramp buffers and cleanup connections."
-    (interactive)
-    (tramp-cleanup-all-buffers)
-    (tramp-cleanup-all-connections)
-    (switch-to-buffer "*scratch*"))
-
-  (defun mar-cleanup-dired-buffers ()
-    (interactive)
-    "Closes all open dired buffers"
-    (mapc (lambda (buffer)
-            (when (eq 'dired-mode (buffer-local-value 'major-mode buffer))
-              (kill-buffer buffer)))
-          (buffer-list)))
   ;; Bindings
   (define-prefix-command 'my-leader-map)
   (evil-define-key 'motion 'global
@@ -196,16 +143,6 @@
     ;; sentence navigator
     (kbd ")") 'evil-forward-sentence-begin
     (kbd "(") 'evil-backward-sentence-begin)
-  (evil-define-key nil my-leader-map
-    ;; buffers
-    (kbd "kb") 'mar-close-this-buffer
-    (kbd "ko") 'mar-close-other-buffer
-    (kbd "kB") 'mar-close-and-kill-this-pane
-    (kbd "kO") 'mar-close-and-kill-other-pane
-    (kbd "kt") 'mar-cleanup-tramp-buffers
-    (kbd "kd") 'mar-cleanup-dired-buffers
-    ;; other
-    (kbd "tf") 'toggle-frame-fullscreen)
   ;; sentence navigation e.g. das (outer) and dis (inner)
   (define-key evil-outer-text-objects-map "s" 'evil-a-sentence)
   (define-key evil-inner-text-objects-map "s" 'evil-inner-sentence)
@@ -250,6 +187,24 @@
     (kbd "C-r") 'undo-fu-only-redo))
 
 ;; Common
+(use-package eplus
+  :straight (eplus :type git :host github :repo "foxfriday/eplus")
+  :demand t
+  :init
+  ;;(define-key global-map "\M-Q" 'ep-unfill-paragraph)
+  (evil-define-key nil 'global
+    (kbd "M-Q") 'ep-unfill-paragraph)
+  (evil-define-key nil my-leader-map
+    ;; buffers
+    (kbd "kb") 'ep-close-this-buffer
+    (kbd "ko") 'ep-close-other-buffer
+    (kbd "kB") 'ep-close-and-kill-this-pane
+    (kbd "kO") 'ep-close-and-kill-other-pane
+    (kbd "kt") 'ep-cleanup-tramp-buffers
+    (kbd "kd") 'ep-cleanup-dired-buffers
+    ;; other
+    (kbd "tf") 'toggle-frame-fullscreen))
+
 (use-package outline
   :straight (:type built-in)
   :config
@@ -291,7 +246,10 @@
     :repeat nil
     :move-point nil
     (interactive "<f>")
-    (counsel-find-file filename))
+    (let* ((fname (if filename filename default-directory)))
+      (if (file-directory-p fname)
+          (counsel-find-file fname)
+        (find-file fname))))
   (evil-ex-define-cmd "find" 'mar-evil-find)
   ;; Bindings
   (evil-define-key nil my-leader-map
@@ -526,8 +484,15 @@
   :config (setq python-indent-guess-indent-offset nil))
 
 (use-package lsp-pyright
-  :ensure t
   :hook (python-mode . (lambda () (require 'lsp-pyright) (lsp-deferred))))
+
+(use-package blacken
+  :straight (blacken :type git :host github :repo "pythonic-emacs/blacken"
+                     :fork (:host github
+                                 :repo "foxfriday/blacken"))
+  :hook (python-mode . blacken-mode)
+  :config
+  (setq blacken-executable "~/.pyenv/versions/emacs/bin/black"))
 
 ;; C++
 (use-package ccls
@@ -602,6 +567,10 @@
     (kbd "C-c l") 'mar-beancount-check))
 
 ;; LaTex - BibTex (also see lsp-mode)
+(use-package ink
+  :straight (ink :type git :host github :repo "foxfriday/ink")
+  :commands (ink-make-figure ink-edit-figure))
+
 (use-package bibtex
   :config
   (setq bibtex-align-at-equal-sign t
@@ -635,4 +604,4 @@
             ((string= extension "epub") (call-process "xdg-open" nil 0 nil nil fpath))
             (t (find-file fpath)))))
   (setq bibtex-completion-pdf-open-function 'mar-bibtex-open-function))
-;; end init.el
+;; init.el ends here

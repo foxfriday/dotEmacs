@@ -5,6 +5,7 @@
 
 ;;; Code:
 ;; Straight
+(setq-default comp-deferred-compilation-deny-list nil)
 (setq-default straight-use-package-by-default t
               straight-vc-git-default-clone-depth 1
               straight-check-for-modifications nil

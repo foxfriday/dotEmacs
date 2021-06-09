@@ -615,7 +615,9 @@
         '((sequence "TODO(t!)" "MEETING(m!)" "WAITING(w!@)" "|" "DONE(d!@)"))
         org-agenda-files '("~/Dropbox/notes/agenda")
         org-columns-default-format "%50ITEM(Task) %10CLOCKSUM %16TIMESTAMP_IA"
-        org-refile-targets '((nil :maxlevel . 2) (org-agenda-files :maxlevel . 2)))
+        org-refile-targets '((nil :maxlevel . 2) (org-agenda-files :maxlevel . 2))
+        org-clock-out-when-done t
+        org-clock-out-remove-zero-time-clocks t)
   (setq org-capture-templates
         '(("t" "Todo" entry (file "~/Dropbox/notes/agenda/todo.org")
            "* TODO %? \n%u\n" :clock-in t :clock-resume t)

@@ -78,7 +78,7 @@
     "Resets fonts to defaults set based on system and monitor"
     (interactive)
     (let* ((height (if (display-graphic-p)
-                       (if (> (x-display-pixel-height) 3000) 140 220)
+                       (if (> (x-display-pixel-height) 3000) 140 190)
                      120))
            (heigvp (+ height 10)))
       (set-face-attribute
@@ -605,4 +605,22 @@
             ((string= extension "epub") (call-process "xdg-open" nil 0 nil nil fpath))
             (t (find-file fpath)))))
   (setq bibtex-completion-pdf-open-function 'mar-bibtex-open-function))
+
+(use-package org
+  :init
+  (global-set-key (kbd "C-c a") 'org-agenda)
+  (global-set-key (kbd "C-c c") 'counsel-org-capture)
+  :config
+  (setq org-todo-keywords ;; ! time stamp @ note with time stamp
+        '((sequence "TODO(t!)" "MEETING(m!)" "WAITING(w!@)" "|" "DONE(d!@)"))
+        org-agenda-files '("~/Dropbox/notes/agenda")
+        org-columns-default-format "%50ITEM(Task) %10CLOCKSUM %16TIMESTAMP_IA"
+        org-refile-targets '((nil :maxlevel . 2) (org-agenda-files :maxlevel . 2)))
+  (setq org-capture-templates
+        '(("t" "Todo" entry (file "~/Dropbox/notes/agenda/todo.org")
+           "* TODO %? \n%u\n" :clock-in t :clock-resume t)
+          ("n" "Now" entry (file+headline "~/Dropbox/notes/agenda/todo.org" "Tasks")
+           "* TODO %? \n%u\n" :clock-in t :clock-keep t)
+          ("m" "Meeting" entry (file+datetree  "~/Dropbox/notes/agenda/meetings.org")
+           "* MEETING with %? \n%t" :clock-in t :clock-resume t))))
 ;; init.el ends here

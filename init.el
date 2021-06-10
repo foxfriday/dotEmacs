@@ -485,7 +485,9 @@
   :config (setq python-indent-guess-indent-offset nil))
 
 (use-package lsp-pyright
-  :hook (python-mode . (lambda () (require 'lsp-pyright) (lsp-deferred))))
+  :hook (python-mode . (lambda () (require 'lsp-pyright) (lsp-deferred)))
+  :config
+  (setq lsp-pyright-venv-path (expand-file-name "~/.pyenv/versions")))
 
 (use-package blacken
   :straight (blacken :type git :host github :repo "pythonic-emacs/blacken"

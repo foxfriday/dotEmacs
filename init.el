@@ -335,7 +335,7 @@
 
 
 (use-package yasnippet
-  :hook ((prog-mode LaTeX-mode) . yas-minor-mode)
+  :hook ((prog-mode LaTeX-mode beancount-mode) . yas-minor-mode)
   :config
   (yas-reload-all))
 
@@ -412,6 +412,15 @@
     "ge" 'flycheck-list-errors
     "]l" 'flycheck-next-error
     "[l" 'flycheck-previous-error))
+
+(use-package tree-sitter-langs)
+
+(use-package tree-sitter
+  :demand t
+  :hook (tree-sitter-after-on . tree-sitter-hl-mode)
+  :init
+  (global-tree-sitter-mode)
+  (require 'tree-sitter-langs))
 
 (use-package lsp-mode
   :hook ((sh-mode tex-mode latex-mode) . lsp-deferred)
@@ -507,7 +516,7 @@
         ccls-sem-highlight-method 'font-lock))
 
 (use-package clang-format+
-  :hook ((c-mode c++-mode) . clang-format+-mode)
+  :hook (c-mode-common . clang-format+-mode)
   :config
   (if mar-on-mac (setq "/usr/local/opt/llvm/bin/clang-format")))
 

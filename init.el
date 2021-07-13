@@ -64,12 +64,8 @@
               (prettify-symbols-mode)
               (flyspell-mode)
               (visual-line-mode)
-              (setq fill-column 80))))
-
-;; Appearance
-(use-package faces
-  :straight (:type built-in)
-  :init
+              (setq fill-column 80)))
+  ;; Fonts
   (defconst mar-font-fp (if mar-on-mac "Menlo" "DejaVu Sans Mono")
     "Default fix point font")
   (defconst mar-font-vp (if mar-on-mac "Helvetica" "DejaVu Sans")
@@ -104,11 +100,9 @@
     (setq olivetti-body-width (if (< olivetti-body-width 1.0) 82 0.8))
     (redraw-frame)))
 
-;; Vim
 (use-package evil
   :init
   (evil-mode +1)
-  :config
   ;; Cursors in terminal
   (unless (display-graphic-p)
     (add-hook 'evil-insert-state-entry-hook
@@ -153,7 +147,7 @@
   (evil-ex-define-cmd "tabclose" 'tab-bar-close-tab)
   (evil-ex-define-cmd "tabonly" 'tab-bar-close-other-tabs)
   (evil-ex-define-cmd "tabrename" 'tab-bar-rename-tab)
-  ;; No fuzz mode line
+  ;; No fuzz mode line with evil indicator
   (defvar mar-mode-line-format
                 '((:eval (propertize evil-mode-line-tag 'face '(:foreground "red")))
                   mode-line-modified
@@ -275,8 +269,7 @@
 
 (use-package counsel-osx-app
   :if mar-on-mac
-  :init
-  (define-key my-leader-map "sa" 'counsel-osx-app))
+  :init (define-key my-leader-map "sa" 'counsel-osx-app))
 
 (use-package ivy
   :init
@@ -331,8 +324,7 @@
         company-selection-wrap-around t
         company-dabbrev-other-buffers t)
   (evil-define-key 'insert company-mode-map
-    (kbd "C-c c") 'company-yasnippet))
-
+    (kbd "C-c y") 'company-yasnippet))
 
 (use-package yasnippet
   :hook ((prog-mode LaTeX-mode beancount-mode) . yas-minor-mode)
@@ -367,7 +359,6 @@
   (setq delete-by-moving-to-trash nil
         dired-dwim-target t)
   (evil-define-key 'normal dired-mode-map
-    ";s" 'dired-sort-toggle-or-edit
     ";h" 'dired-hide-details-mode
     ";f" 'dired-show-file-type
     "za" 'dired-subtree-toggle
@@ -575,7 +566,7 @@
       (beancount--run beancount-check-program
                       (file-relative-name "main.beancount"))))
   (evil-define-key nil beancount-mode-map
-    (kbd "C-c a") 'mar-beancount-align
+    (kbd "C-c C-a") 'mar-beancount-align
     (kbd "C-c l") 'mar-beancount-check))
 
 ;; LaTex - BibTex (also see lsp-mode)
@@ -621,19 +612,33 @@
   :init
   (global-set-key (kbd "C-c a") 'org-agenda)
   (global-set-key (kbd "C-c c") 'counsel-org-capture)
+  (global-set-key (kbd "C-c h") 'counsel-org-agenda-headlines)
+  (defvar mar-org-todo "~/Dropbox/notes/agenda/todo.org")
   :config
-  (setq org-todo-keywords ;; ! time stamp @ note with time stamp
-        '((sequence "TODO(t!)" "MEETING(m!)" "WAITING(w!@)" "|" "DONE(d!@)"))
+  (setq org-pretty-entities t
+        org-todo-keywords ;; ! time stamp @ note with time stamp
+        '((sequence "TODO(t)" "MEET(m)" "WAIT(w!@)" "|" "DONE(d!@)"))
         org-agenda-files '("~/Dropbox/notes/agenda")
+        org-agenda-window-setup 'current-window
+        org-agenda-skip-deadline-if-done t
+        org-agenda-skip-timestamp-if-done t
+        org-agenda-skip-deadline-prewarning-if-scheduled t
         org-columns-default-format "%50ITEM(Task) %10CLOCKSUM %16TIMESTAMP_IA"
         org-refile-targets '((nil :maxlevel . 2) (org-agenda-files :maxlevel . 2))
         org-clock-out-when-done t
-        org-clock-out-remove-zero-time-clocks t)
+        org-clock-out-remove-zero-time-clocks t
+        org-clock-report-include-clocking-task t
+        org-deadline-warning-days 7)
   (setq org-capture-templates
-        '(("t" "Todo" entry (file "~/Dropbox/notes/agenda/todo.org")
-           "* TODO %? \n%u\n" :clock-in t :clock-resume t)
-          ("n" "Now" entry (file+headline "~/Dropbox/notes/agenda/todo.org" "Tasks")
-           "* TODO %? \n%u\n" :clock-in t :clock-keep t)
-          ("m" "Meeting" entry (file+datetree  "~/Dropbox/notes/agenda/meetings.org")
-           "* MEETING with %? \n%t" :clock-in t :clock-resume t))))
+        '(("t" "Todo" entry (file+headline mar-org-todo "Tasks")
+           "* TODO %^{TODO} \n%U\n%?" :clock-in t :clock-resume t :empty-lines-after 1)
+          ("n" "Now" entry (file+headline mar-org-todo "Tasks")
+           "* TODO %^{TODO}\n%U\n%?" :clock-in t :clock-keep t :empty-lines-after 1)
+          ("m" "Meeting" entry (file+headline  mar-org-todo "Meetings")
+           "* %U: With %^{WITH}\n\n%?" :clock-in t :clock-resume t :empty-lines-after 1))))
+
+(use-package org-pomodoro
+  :config
+  (setq org-pomodoro-manual-break t
+        org-pomodoro-time-format "%.2m"))
 ;; init.el ends here

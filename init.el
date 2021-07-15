@@ -631,7 +631,7 @@
         org-deadline-warning-days 7)
   (setq org-capture-templates
         '(("t" "Todo" entry (file+headline mar-org-todo "Tasks")
-           "* TODO %^{TODO} \n%U\n%?" :clock-in t :clock-resume t :empty-lines-after 1)
+           "* TODO %^{TODO} \n%U\n%?" :empty-lines-after 1)
           ("n" "Now" entry (file+headline mar-org-todo "Tasks")
            "* TODO %^{TODO}\n%U\n%?" :clock-in t :clock-keep t :empty-lines-after 1)
           ("m" "Meeting" entry (file+headline  mar-org-todo "Meetings")

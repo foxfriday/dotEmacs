@@ -256,8 +256,10 @@
     "hb" 'counsel-descbinds
     "ha" 'counsel-apropos
     ;; search/switch
-    "sf" 'project-find-file
-    "sm" 'counsel-mark-ring
+    "sp" 'project-find-file
+    "sf" 'counsel-fzf
+    "sr" 'counsel-recentf
+    "sm" 'counsel-evil-marks
     "sb" 'counsel-bookmark
     "sd" 'mar-rg-directory
     "sg" 'counsel-git-grep

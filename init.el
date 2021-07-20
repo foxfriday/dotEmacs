@@ -384,6 +384,9 @@
   ;; nicer dired colors
   :hook (dired-mode . diredfl-mode))
 
+(use-package magit
+  :init (global-set-key (kbd "C-c m") 'magit-dispatch))
+
 (use-package compile
   :straight (:type built-in)
   :config
